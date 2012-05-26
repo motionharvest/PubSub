@@ -9,30 +9,27 @@ Pure Javascript implementation of a Publish/Subscribe pattern
 
 PubSub is short for Publish and Subscribe.
 
-When a function is done doing what it does, and you want other parts of your application (or website) to respond...
+When a function is done doing what it does, and you want other parts of your application (or website) to respond.
 
-1) You can slop your code anywhere, and not care at all about the structure or purpose of your code. You can be as dumb as you want. Functionality and just sit inside of any scope, and listen to this global PubSub object.
+The way I see it, you can slop your code anywhere, and not care at all about the structure or purpose of it. Functionality can just sit inside of any scope, and listen to this global PubSub object. In the JavaScript reality, it is doable.
 
-2) Don't be lazy, and write smart applications that are structured in a way that new people to the project won't want to kill themselves because of how chaotic everything is.
+I think of it like the wild west. I don't know about you, but I prefer a little bit of structure in my life. Write smart applications that are structured in a way that new team members won't want to pull their hair out because of how chaotic everything is.
 
-The only reason to use PubSub is if you have no clue how to write custom event handlers, you're in a hurry, or you have a massive application that has spiraled out of control and there's no possible way to refactor it before it's deadline.
+The situations I encourage the use of PubSub are if you have no clue how to write custom event handlers, you're in a hurry, or you have a massive application that has spiraled out of control and there's no possible way to refactor it.
 
-If you are starting an application from scratch. Don't use PubSub! It will distract you from structuring your code, and when thinking about how things should be structured, you will quickly find yourself in a mess of crossing events.
+If you are starting an application from scratch. Don't use PubSub. It will distract you from structuring your code. You will quickly find yourself in a mess of events. And when debugging, you'll always be looking through EVERY script for occurances of the subscription.
 
 Its a slippery slope.
 
+Imagine everything you wanted in life came from a single location and you got a text message every time something was ready for you. Eventually the number of text messages you'd be getting would become overwhelming. You wouldn't be able to focus on anything without being interupted with a notification to do something else. You'd need a better way to categorize your notifications. You might come to the conclusion that after a certain number of a certain type of thing is available, you'd go and pick them up.
 
-Imagine everything you wanted, came from a single location. You go to this location to watch new movies, buy new clothes, eat fresh pastries, as well as for every other thing you use, or buy, when its ready for you. What would be the best way to categorize how you are told when the things you need are ready?
-
-The job of the publisher is pretty simple. It relays what you want when its ready. But the structure of "what you want" is up to the user to decide.
+The job of the publisher is pretty simple. It relays what you want when its ready, but not nessicarily when you're ready to get it. In order to manage groups of notifications, my PubSub object allows you to respond to wildcards.
 
 Lets say I'm tasked with keeping my house clean (in a javascript application sort of way).
 When something in the room is dirty I want to clean it.
 
-Rather than subscribing to every item in the room that could possibly become dirty, I can listen for a wildcard (*). When something in the current room tells me its dirty, I can respond accordingly.
+Rather than subscribing to every item in the room that could possibly become dirty, I can listen for a wildcard (*). When something in the current room tells me its dirty, I can respond accordingly. Or take note of it, and when I have time, I'll clean it.
 
-Its especially nice when you don't know what the names will be, but want to be alerted when any action in a category is fired.
-It should be stated that this code is moldable. It is only in its current state because I'm trying to tell my team not to use PubSub, and lean to write well structured, and intellegently designed applications. 
 
 ~~~
 function Room(id, cleanables){
@@ -59,11 +56,12 @@ function Room(id, cleanables){
 function Person(){
 	var imIn;
     var attentionSpan;
-  
+  	var thingThatNeedClean;
+  	
 	function takeAction(e){
       if(e.data.needs === "cleaned"){
 		console.log("Whew, that "+ e.data.thing + " needs cleaned");
-        clean(e.data.thing);
+        thingsThatNeedCleaned.push({room:imIn, thing:e.data.thing});
       }
 	}
   function clean(what){
@@ -94,6 +92,8 @@ pete.lookAroundRoom(kitchen);
 ~~~
 
 
+Its especially nice when you don't know what the names will be, but want to be alerted when any action in a category is fired anway.
+It should be stated that this code is moldable. It is only in its current state because I'm trying to tell my team not to use PubSub, and lean to write well structured, and intellegently designed applications instead. In order to have a leg to stand on, I figured I'd show them I know what I'm talking about, but let them choose what works for them. 
 
 
 
