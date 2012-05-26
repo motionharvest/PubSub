@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+    
+    <head>
+        <script type="text/javascript" src="pubsub.js"></script>
+        <script type="text/javascript">
+            function Room(id, cleanables) {
+                var roomId = id;
+                var thingsToClean = cleanables;
+                this.status = function () {
+                    for (var i in thingsToClean) {
+                        if (thingsToClean[i].length > 5) {
+                            PubSub.publish("Room." + roomId + "." + i, {
+                                thing: i,
+                                needs: 'cleaned'
+                            });
+                        }
+                    }
+                };
+                this.noticables = function () {
+                    return thingsToClean;
+                };
+                this.getRoomId = function () {
+                    return roomId;
+                };
+                this.clean = function (thing) {
+                    thingsToClean[thing] = [];
+                    console.log('Cleaned the ' + thing);
+                };
+            }
+
+            function Person() {
+                var imIn;
+                var attentionSpan;
+
+                function takeAction(e) {
+                    if (e.data.needs === "cleaned") {
+                        console.log("Whew, that " + e.data.thing + " needs cleaned");
+                        clean(e.data.thing);
+                    }
+                }
+
+                function clean(what) {
+                    imIn.clean(what);
+                }
+
+                this.lookAroundRoom = function (whatRoom) {
+                    imIn = whatRoom; //?
+                    console.log("Let's see what we've got here in the " + imIn.getRoomId());
+                    attentionSpan = PubSub.subscribe("Room." + imIn.getRoomId() + ".*", takeAction);
+                    whatRoom.status();
+                };
+
+                this.leaveRoom = function () {
+                    imIn = undefined;
+                    PubSub.unsubscribe(attentionSpan);
+                };
+
+            }
+
+            var kitchen = new Room('kitchen', {
+                "trashCan": ['wrapper', 'scraps', 'junkmail', 'toothpicks', 'qtip', 'peanut shells'],
+                "bookcase": [],
+                "floor": []
+            });
+
+            var aaron = new Person();
+            aaron.lookAroundRoom(kitchen);
+
+            var pete = new Person();
+            pete.lookAroundRoom(kitchen);
+        </script>
+        <meta charset=utf-8 />
+        <title>PubSub - An Example</title>
+    </head>
+    
+    <body>
+        <h1>pubsub.js example</h1>
+        <p>Check the console for the output.</p>
+    </body>
+
+</html>
